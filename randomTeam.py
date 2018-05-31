@@ -39,7 +39,7 @@ def allocateTeams(clusters, centers, listing):
 		centers[i] = recenter(centers[i], clusters[i])
 
 def maxDeviation(clusters):
-	 maxAve = 10
+	 maxAve = 0
 	 for cluster in clusters:
 		 total = 0
 		 for member in cluster:
