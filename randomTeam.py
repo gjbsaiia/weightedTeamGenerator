@@ -23,7 +23,7 @@ def dist(new, centroid):
 
 def allocateTeams(clusters, centers, listing):
 	 for each in listing:
-		cut = listing.split(' ')
+		cut = each.split(' ')
 		weight = cut[1]
 		name = cut[0]
 	 	min = 10
@@ -35,11 +35,19 @@ def allocateTeams(clusters, centers, listing):
 				min = d
 				nm = i
 			i += 1
-		clusters[i].append(listing)
-		centers[i] = recenter(centers[i], clusters[i])
+		clusters[nm].append(listing)
+		centers[nm] = recenter(centers[nm], clusters[nm])
+		i = 0
+		for cluster in clusters:
+			print i
+			print centers[i]
+			for name in cluster:
+				print name
+			i += 1
+
 
 def maxDeviation(clusters):
-	 maxAve = 0
+	 maxAve = 10
 	 for cluster in clusters:
 		 total = 0
 		 for member in cluster:
@@ -70,18 +78,19 @@ def cleanUpClusters(clusters):
 
 def main():
 	print "welcome to 'random' tug o' war team generator"
- 	line = " "
- 	listing = []
- 	clusters = []
- 	while line != "done":
- 		line = raw_input("please enter a name and a weight or done: ")
+	line = " "
+	listing = []
+	clusters = []
+	line = raw_input("please enter a name and a weight, or done: ")
+	while line != "done":
 		listing.append(line)
+		line = raw_input("please enter a name and a weight, or done: ")
 	i = 0
 	while(i < getNoOfClusters(listing, teamSize)):
 		clusters.append([])
- 	centers = np.zeros(getNoOfClusters(listing, teamSize))
+	centers = np.zeros(getNoOfClusters(listing, teamSize))
 	allocateTeams(clusters, centers, listing)
- 	deviation = maxDeviation(clusters)
+	deviation = maxDeviation(clusters)
 	while(deviation > 2):
 		allocateTeams(clusters, centers, listing)
 		deviation = maxDeviation(clusters)
@@ -89,10 +98,10 @@ def main():
 	print clusters
 
 if __name__ == '__main__':
-	try:
-    	main()
-	except KeyboardInterrupt:
-    	print 'Interrupted'
+    try:
+        main()
+    except KeyboardInterrupt:
+        print 'Interrupted'
         try:
             sys.exit(0)
         except SystemExit:
