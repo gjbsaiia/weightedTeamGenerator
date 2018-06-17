@@ -17,52 +17,54 @@ def dist(new, centroid):
 	 return ((centroid - new) ** 2)
 
 def allocateTeams(clusters, centers, listing):
-	 for each in listing:
+	for each in listing:
 		cut = each.split(' ')
-		weight = cut[1]
+		weight = int(cut[1])
 		name = cut[0]
-	 	min = 10
+		min = 100
 		nm = 0
 		i = 0
-	 	for center in centers:
+		for center in centers:
 			d = dist(weight, center)
-		 	if (d < min & (len(cluster[i]) < teamSize)):
-				min = d
-				nm = i
+		 	if (d < min):
+				if len(clusters[i]) < teamSize:
+					min = d
+					nm = i
 			i += 1
-		clusters[nm].append(listing)
+		clusters[nm].append(each)
 		centers[nm] = recenter(centers[nm], clusters[nm])
-		i = 0
-		for cluster in clusters:
-			print i
-			print centers[i]
-			for name in cluster:
-				print name
-			i += 1
 
 def maxDeviation(clusters):
-	 maxAve = 10
+	 maxDif = 1
+	 averages = []
 	 for cluster in clusters:
-		 total = 0
-		 for member in cluster:
-			 cut = member.split(' ')
-			 weight = cut[1]
-			 total += weight
-		 ave = (total+0.0) / len(cluster)
-		 if(ave > maxAve):
-			 maxAve = ave
-	 return maxAve
+		 averages.append(aveInCluster(cluster))
+	 for ave1 in averages:
+		 for ave2 in averages:
+			 if  ((ave1 - ave2) ** 2) > maxDif:
+				 maxDif = ((ave1 - ave2) ** 2)
+	 return maxDif
+
+def aveInCluster(cluster):
+	 total = 0
+	 for member in cluster:
+		 cut = member.split(' ')
+		 weight = int(cut[1])
+		 total += weight
+	 return ((total+0.0)/len(cluster))
 
 def recenter(center, cluster):
 	ave = 0
-	for entry in cluster:
-		cut = entry.split(' ')
-		weight = cut[1]
+	i = 0
+	while i < len(cluster):
+		cut = cluster[i].split(' ')
+		weight = int(cut[1])
 		ave += weight
+		i+=1
 	return (ave+0.0)/len(cluster)
 
 def cleanUpClusters(clusters):
-	for cluster in cluster:
+	for cluster in clusters:
 		team = []
 		for entry in cluster:
 			cut = entry.split(' ')
@@ -76,6 +78,7 @@ def main():
 	line = " "
 	listing = []
 	clusters = []
+	centers = []
 	line = raw_input("file entry, or manual entry? ")
 	flag = 0
 	while 1:
@@ -99,22 +102,22 @@ def main():
 			split = line.split('\n')
 			listing.append(split[0])
 	i = 0
-	print listing
-	getNoOfClusters(listing, teamSize)
-	while(i < teamSize):
+	n = getNoOfClusters(listing, teamSize)
+	while(i < n):
 		clusters.append([])
+		centers.append(0)
 		i += 1
-	print teamSize
-	centers = np.zeros(getNoOfClusters(listing, teamSize))
 	allocateTeams(clusters, centers, listing)
 	deviation = maxDeviation(clusters)
+	print "First round:"
 	print clusters
 	print deviation
-	#while(deviation > 2):
-	#	allocateTeams(clusters, centers, listing)
-	#	deviation = maxDeviation(clusters)
-	#cleanUpClusters(clusters)
-	#print clusters
+	while(deviation > 25):
+		allocateTeams(clusters, centers, listing)
+		deviation = maxDeviation(clusters)
+	cleanUpClusters(clusters)
+	print deviation
+	print clusters
 
 if __name__ == '__main__':
     try:
