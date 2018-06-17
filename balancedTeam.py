@@ -85,6 +85,7 @@ def main():
 		if(line == "file"):
 			flag = 0
 			break
+		raw_input("type either 'file' or 'manual': ")
 	if flag == 1:
 		line = raw_input("please enter a name and a weight, or done: ")
 		while line != "done":
