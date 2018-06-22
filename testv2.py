@@ -4,17 +4,7 @@ import os
 import matplotlib.pyplot as mat
 import operator
 
-def readData(filename):
-    readdata = []
-    file = open(filename)
-    lines = file.read().splitlines()
-    for line in lines:
-        try:
-            readdata.append(float(line.split(',')[1]))
-        except ValueError:
-            print('none')
-
-    return readdata
+FEATURES = 2
 
 def sortify(centroids, dataCents):
     sortedCentroids = {}
@@ -38,11 +28,11 @@ def swapAssignments(dataCents, swaps):
     return newCents
 
 
-def initCentroids(numCentroids):
-    centroids = {}
-    for i in range(numCentroids):
-        centroids[i] = (int(np.random.binomial(11,.12)*100))
-    return centroids
+#def initCentroids(numCentroids):
+#    centroids = {}
+#    for i in range(numCentroids):
+#        centroids[i] = (int(np.random.binomial(11,.12)*100))
+#    return centroids
 
 def initCentroids(numCentroids, data):
 	centroids = {}
@@ -57,7 +47,7 @@ def initCentroids(numCentroids, data):
 
 def nearestCentroid(centroids, datapt):
     nearest = -1
-    nearestDist = 1000000;
+    nearestDist = sys.maxsize;
     for c in centroids:
         if(dist(centroids[c],datapt) < nearestDist):
             nearestDist = dist(centroids[c],datapt)
@@ -68,32 +58,47 @@ def nearestCentroid(centroids, datapt):
 def randData(amt):
     data = []
     for i in range(amt):
-        data.append((np.random.normal(50, 10,1)))
+        data.append(tuple(np.random.normal(50, 10,FEATURES)))
     return data
 
 def dist(c,d):
-    return abs(c-d)
+    if(type(c) != tuple or type(d) != tuple):
+        print('make both inputs tuples')
+        return -1
+    if(len(c) != len(d)):
+        print('make both tuples the same length')
+        return -1
+    dist = 0
+    for i in range(len(c)):
+        dist += (c[i]-d[i])**2
+    return dist
+
 
 def refactorCentroids(centroids,dataCents, data):
     i = 0
     newCentroids ={}
     for c in centroids:
-        newCentPos = -1
-        sum = 0
+        sum = (0,)*FEATURES
         count = 0
         j=0
         for d in data:
             if(dataCents[j] == i):
-                sum += d
+                sum = addtuples(sum,d)
                 count+=1
             j+=1
         if(count > 0):
-            newCentPos = sum/count
-            newCentroids[i]=newCentPos
+            newCentroids[i]=divtuples(sum,count)
         else:
             newCentroids[i]=centroids[i]
         i +=1
     return newCentroids
+
+def addtuples(*args):
+    return tuple(map(sum, zip(*args)))
+
+def divtuples(val,divisor):
+    return tuple(map(lambda x: x / divisor, val))
+
 
 def checkCentroids(new,old):
     count = len(new)
@@ -105,11 +110,10 @@ def checkCentroids(new,old):
         return True
     else:
         return False
-def main(input):
+def main():
     
-    #data = randData(1000)
-    data = readData('auth_amt.csv')
-    centroids = initCentroids(input,data)
+    data = randData(1000)
+    centroids = initCentroids(4,data)
     print('first centroids: ' + str(centroids))
     #print(data)
     # initing the first datapt:centroid index list
@@ -151,25 +155,22 @@ def main(input):
     while(len(centroids)>0):
         minimum = min(centroids.items(),key=lambda x:x[1])
         centroids.pop(minimum[0])
-        mat.scatter(minimum[1],3*index,s=30)
+        mat.scatter(minimum[1][0],minimum[1][1],s=50, color = (0,0,0))
         dataList = []
-        ptList = []
         i=0
         for d in dataCents:
             if(d == minimum[0]):
                 dataList.append(data[i])
-                ptList.append(3*index + np.random.uniform(-1,1))
             i+=1
         print('num in cluster '+ str(minimum[0])+' located at: '+str(minimum[1])+' ::::: '+str(len(dataList)))
-        mat.scatter(dataList,ptList,s=4)
-        index +=1
+        mat.scatter([i[0] for i in dataList],[i[1] for i in dataList],s=4)
+        #index +=1
     mat.show()
 
 if __name__ == '__main__':
     try:
 
-        for ix in range(1,10):
-            main(ix*2)
+        main()
     except KeyboardInterrupt:
         print('Interrupted')
         try:
