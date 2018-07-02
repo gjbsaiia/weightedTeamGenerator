@@ -101,16 +101,24 @@ def main():
             listing.append(line)
             line = input("please enter a name and a weight, or done: ")
     else:
-        filename = input("Please enter filename: ")
-        with open(filename) as names:
-            lines = names.readlines()
-            names.close()
+        filename = ""
+        lines = []
+        while(1):
+            filename = input("Please enter valid filename: ")
+            try:
+                with open(filename) as names:
+                    lines = names.readlines()
+                    names.close()
+                break
+            except FileNotFoundError:
+                print('File not found. :(')
         for line in lines:
             split = line.split('\n')
             listing.append(split[0])
     i = 0
     n = getNoOfClusters(listing, teamSize)
     print('n: ' + str(n))
+    print('...processing...')
     while(i < n):
         clusters.append([])
         centers.append(0)
@@ -131,9 +139,6 @@ def main():
     cleanUpClusters(clusters)
     print(deviation)
     print(clusters)
-
-
-
 
 if __name__ == '__main__':
     try:
