@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 
-teamSize = 5
+teamSize = 7
 
 def getNoOfClusters(listing, teamSize):
     #totalPeople = len(listing)
@@ -47,7 +47,7 @@ def maxDeviation(clusters):
 
 def aveInCluster(cluster):
      total = 0
-     print(cluster)
+     #print(cluster)
      for member in cluster:
          cut = member.split(' ')
          weight = int(cut[1])
@@ -80,7 +80,6 @@ def initCentroids(numCentroids):
     return centroids
 
 def main():
-    filename = "listing.txt"
     print("welcome to balanced tug o' war team generator")
     line = " "
     listing = []
@@ -102,36 +101,44 @@ def main():
             listing.append(line)
             line = input("please enter a name and a weight, or done: ")
     else:
-        with open(filename) as names:
-            lines = names.readlines()
-            names.close()
+        filename = ""
+        lines = []
+        while(1):
+            filename = input("Please enter valid filename: ")
+            try:
+                with open(filename) as names:
+                    lines = names.readlines()
+                    names.close()
+                break
+            except FileNotFoundError:
+                print('File not found. :(')
         for line in lines:
             split = line.split('\n')
             listing.append(split[0])
     i = 0
     n = getNoOfClusters(listing, teamSize)
     print('n: ' + str(n))
+    print('...processing...')
     while(i < n):
         clusters.append([])
         centers.append(0)
         i += 1
     allocateTeams(clusters, centers, listing)
-    print('clusters post alloc: ')
     deviation = maxDeviation(clusters)
     print("First round:")
     print(clusters)
     print(deviation)
-    while(deviation > 2):
-        print('reach')
-        print(clusters)
+    i = 0
+    while(deviation > 3):
         allocateTeams(clusters, centers, listing)
         deviation = maxDeviation(clusters)
+        i += 1
+        print('round '+str(i)+':')
+        print(deviation)
+        print(clusters)
     cleanUpClusters(clusters)
     print(deviation)
     print(clusters)
-
-
-
 
 if __name__ == '__main__':
     try:
