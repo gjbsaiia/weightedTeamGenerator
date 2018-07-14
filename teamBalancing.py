@@ -320,7 +320,7 @@ def writeOutClusters(clusterList):
 # lil test method that references an early sign up sheet
 def test():
 	pool = []
-	filename = "TOW_7_2.txt"
+	filename = "listing.txt"
 	try:
 		with open(filename) as names:
 			lines = names.readlines()
