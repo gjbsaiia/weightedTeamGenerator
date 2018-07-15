@@ -37,7 +37,7 @@ clusterSize = 5
 def main():
 	pool = start()
 	clusterList = setClusters(pool)
-	sortPool(pool)
+	sortTupleList(pool, True)
 	tieredPool = tierPool(pool, clusterList)
 	allocateClusters(tieredPool, clusterList)
 	printClusters(clusterList)
@@ -156,35 +156,45 @@ def setClusters(pool):
 		i += 1
 	return clusterList
 
-# max ordering quicksort specific to the pool data type
-def sortPool(pool):
-	sortPoolHelper(pool, 0, len(pool) - 1)
+# max/min ordering quicksort specific to a tuple list
+# key: true, max ordering
+# key: false, min ordering
+def sortTupleList(tupleList, key):
+	sortTupleListHelper(tupleList, 0, len(tupleList) - 1, key)
 # still just quicksort
-def sortPoolHelper(pool, maxx, minn):
-	if(maxx < minn):
-	   split = poolPartition(pool, maxx, minn)
-	   sortPoolHelper(pool, maxx, split - 1)
-	   sortPoolHelper(pool, split + 1, minn)
+def sortTupleListHelper(tupleList, first, last, key):
+	if(first < last):
+	   split = tupleListPartition(tupleList, first, last, key)
+	   sortTupleListHelper(tupleList, first, split - 1, key)
+	   sortTupleListHelper(tupleList, split + 1, last, key)
 # quicksort is so verbose but so so nice
-def poolPartition(pool, maxx, minn):
-	pivot = pool[maxx]
-	left = maxx + 1
-	right = minn
+def tupleListPartition(tupleList, first, last, key):
+	pivot = tupleList[first]
+	left = first + 1
+	right = last
 	done = False
 	while(not done):
-	   while(left <= right and pool[left][1] >= pivot[1]):
-	       left = left + 1
-	   while(right >= left and pool[right][1] <= pivot[1]):
-	       right = right-1
-	   if right < left:
-	       done = True
-	   else:
-	       hold = pool[left]
-	       pool[left] = pool[right]
-	       pool[right] = hold
-	hold = pool[maxx]
-	pool[maxx] = pool[right]
-	pool[right] = hold
+		# for sorting max->min
+		if(key):
+		   while(left <= right and tupleList[left][1] >= pivot[1]):
+		       left = left + 1
+		   while(right >= left and tupleList[right][1] <= pivot[1]):
+		       right = right-1
+	    # for sorting min->max
+	   	else:
+   		   while(left <= right and tupleList[left][1] <= pivot[1]):
+   		       left = left + 1
+   		   while(right >= left and tupleList[right][1] >= pivot[1]):
+   		       right = right-1
+		if(right < left):
+		   done = True
+		else:
+		   hold = tupleList[left]
+		   tupleList[left] = tupleList[right]
+		   tupleList[right] = hold
+	hold = tupleList[first]
+	tupleList[first] = tupleList[right]
+	tupleList[right] = hold
 	return right
 
 # method that tiers the presorted pool into rounds of picks
@@ -246,7 +256,7 @@ def evaluateClusters(clusterList, pickOrder):
 		weightsOfClusters.append([i, totalWeight(cluster[1])])
 		i += 1
 	# sorts weightsOfCluster min->max
-	sortWeights(weightsOfClusters)
+	sortTupleList(weightsOfClusters, False)
 	# sets pick order by pulling the indexes of the clusters from
 	# the sorted list of cluster weights
 	for each in weightsOfClusters:
@@ -261,37 +271,6 @@ def totalWeight(tupleList):
 		sum += tupleList[i][1]
 		i += 1
 	return sum
-
-# min ordering quicksort specialized for tupleLists
-def sortWeights(weightList):
-	sortWeightHelper(weightList, 0, len(weightList) - 1)
-# yay quicksort
-def sortWeightHelper(weightList, minn, maxx):
-	if(minn < maxx):
-	   split = weightPartition(weightList, minn, maxx)
-	   sortWeightHelper(weightList, minn, split - 1)
-	   sortWeightHelper(weightList, split + 1, maxx)
-# yo  s u p  it's quicksort
-def weightPartition(weightList, minn, maxx):
-	pivot = weightList[minn]
-	left = minn + 1
-	right = maxx
-	done = False
-	while(not done):
-	   while(left <= right and weightList[left][1] <= pivot[1]):
-	       left = left + 1
-	   while(right >= left and weightList[right][1] >= pivot[1]):
-	       right = right-1
-	   if right < left:
-	       done = True
-	   else:
-	       hold = weightList[left]
-	       weightList[left] = weightList[right]
-	       weightList[right] = hold
-	hold = weightList[minn]
-	weightList[minn] = weightList[right]
-	weightList[right] = hold
-	return right
 
 # printing method
 def printPool(pool):
@@ -320,7 +299,7 @@ def writeOutClusters(clusterList):
 # lil test method that references an early sign up sheet
 def test():
 	pool = []
-	filename = "listing.txt"
+	filename = "TOW_7_2.txt"
 	try:
 		with open(filename) as names:
 			lines = names.readlines()
