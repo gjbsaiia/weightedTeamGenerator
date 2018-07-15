@@ -36,23 +36,29 @@ clusterSize = 5
 
 def main():
 	pool = start()
-	clusterList = setClusters(pool)
-	sortTupleList(pool, True)
-	tieredPool = tierPool(pool, clusterList)
-	allocateClusters(tieredPool, clusterList)
-	printClusters(clusterList)
-	targetClusterAve = totalWeight(pool) / ( len(pool) / clusterSize)
-	print("Target clusterweight: "+str(targetClusterAve))
-	writeOutClusters(clusterList)
+	if(len(pool) > 2*clusterSize):
+		clusterList = setClusters(pool)
+		sortTupleList(pool, True)
+		tieredPool = tierPool(pool, clusterList)
+		allocateClusters(tieredPool, clusterList)
+		printClusters(clusterList)
+		targetClusterAve = totalWeight(pool) / ( len(pool) / clusterSize)
+		print("Target clusterweight: "+str(targetClusterAve))
+		writeOutClusters(clusterList)
+	else:
+		print("-----------------------------------------------------------")
+		print("-----------------------------------------------------------")
+		print("not a valid pool size, for your target cluster size. sorry.")
+		main()
 
 # the wrapper for the program
 def start():
-	print("--------------------------------------------------------")
+	print("-----------------------------------------------------------")
 	print("Welcome to the Progressive Tug O War Team Generator")
 	print("        o  o  o                  o  o  o              ")
 	print("        |-<|-<|--<~~~~~~~~~~~~>--|>-|>-|              ")
 	print("        |\ |\ |\                /| /| /|              ")
-	print("--------------------------------------------------------")
+	print("-----------------------------------------------------------")
 	line = ""
 	pool = []
 	line = raw_input("manual entry or file entry? ")
@@ -86,11 +92,14 @@ def manualEntry(pool):
 			if(line == "oops"):
 				pool = removeLast(pool)
 			else:
-				# formats the tuple for easy printing later
-				split = line.split(" ")
-				name = split[0].split(",")
-				tuple = [name[0]+" "+name[1], int(split[1])]
-				pool.append(tuple)
+				try:
+					# formats the tuple for easy printing later
+					split = line.split(" ")
+					name = split[0].split(",")
+					tuple = [name[0]+" "+name[1], int(split[1])]
+					pool.append(tuple)
+				except IndexError:
+					print("please use the proper contestant entry format.")
 		line = raw_input("enter contestant: ")
 	print("current pool:")
 	printPool(pool)
@@ -276,6 +285,7 @@ def totalWeight(tupleList):
 def printPool(pool):
 	for tuple in pool:
 		print("  - "+tuple[0]+", "+str(tuple[1]))
+
 # printing methodddds
 def printClusters(clusterList):
 	print("Clusters:")
@@ -284,6 +294,7 @@ def printClusters(clusterList):
 		print("Team "+str(i)+"'s Weight: "+str(cluster[0]))
 		printPool(cluster[1])
 		i += 1
+
 # writes teams without any of the weighting to a .txt file for distribution
 def writeOutClusters(clusterList):
 	f = open("TugOWarTeams.txt", "w+")
