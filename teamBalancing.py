@@ -49,9 +49,9 @@ def main():
 def start():
 	print("--------------------------------------------------------")
 	print("Welcome to the Progressive Tug O War Team Generator")
-	print("            o                  o                   ")
-	print("            |--<~~~~~~~~~~~~>--|                   ")
-	print("            |\                /|                   ")
+	print("        o  o  o                  o  o  o              ")
+	print("        |-<|-<|--<~~~~~~~~~~~~>--|>-|>-|              ")
+	print("        |\ |\ |\                /| /| /|              ")
 	print("--------------------------------------------------------")
 	line = ""
 	pool = []
