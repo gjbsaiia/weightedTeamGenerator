@@ -2,12 +2,10 @@ import numpy as np
 import sys
 import os
 import matplotlib.pyplot as mat
-<<<<<<< HEAD
 #import operator
 import csv
-=======
-import operator
->>>>>>> 65464410da796461e42c612969d71838d652dee8
+import dataUtil
+
 
 FEATURES = 2
 
@@ -115,57 +113,40 @@ def checkCentroids(new,old):
         return True
     else:
         return False
-<<<<<<< HEAD
 def main(clust,data):
-    
-
+    origData = data
+    larges = dataUtil.dataTransform(data=[i[0] for i in data], type='log')
+    smalls = dataUtil.dataTransform(data=[i[1] for i in data], type='none')
+    data = dataUtil.zipData(datasets=[larges, smalls])
+    zdata, metad = dataUtil.dataZify(data)
+    print('data metadata index: (avg, std): ')
+    print(metad)
+    data = dataUtil.zipData(datasets=[zdata[0],zdata[1]])
     centroids = initCentroids(clust,data)
-=======
-def main():
-    
-    data = randData(1000)
-    centroids = initCentroids(4,data)
->>>>>>> 65464410da796461e42c612969d71838d652dee8
     print('first centroids: ' + str(centroids))
-    #print(data)
-    # initing the first datapt:centroid index list
     dataCents = []
     for d in data:
         dataCents.append(nearestCentroid(centroids, d))
 
     centroids = refactorCentroids(centroids, dataCents, data)
     print(centroids)
-<<<<<<< HEAD
     notClose = True
     while(notClose):
-=======
-
-    while(True):
->>>>>>> 65464410da796461e42c612969d71838d652dee8
         dataCents.clear()
         for d in data:
             dataCents.append(nearestCentroid(centroids, d))
 
         newCentroids = refactorCentroids(centroids, dataCents,data)
         if(checkCentroids(newCentroids,centroids)):
-<<<<<<< HEAD
             notClose = False
         centroids = newCentroids
-       # print(centroids)
-=======
-            break
-        centroids = newCentroids
-        print(centroids)
->>>>>>> 65464410da796461e42c612969d71838d652dee8
 
     print('\n\n')
     print('old dc: '+str(dataCents))
-    #centroids = sortify(centroids, dataCents)
     print('final centroids: '+ str(centroids))
     print('data:           '+ str(data))
     print('data centroids: '+str(dataCents))
     ones = []
-    #centroids = sorted(centroids.items(), key=operator.itemgetter(1))
     print(centroids)
     for i in range(len(centroids)):
         ones.append(1)
@@ -174,25 +155,16 @@ def main():
         mores.append(1)
 
     min(centroids.items(), key=lambda x: x[1])
-<<<<<<< HEAD
     totalErr = 0
     while(len(centroids)>0):
         minimum = min(centroids.items(),key=lambda x:x[1])
         centroids.pop(minimum[0])
         mat.scatter(minimum[1][0],minimum[1][1],s=30, color = (0,0,0))
-=======
-    index = 0
-    while(len(centroids)>0):
-        minimum = min(centroids.items(),key=lambda x:x[1])
-        centroids.pop(minimum[0])
-        mat.scatter(minimum[1][0],minimum[1][1],s=50, color = (0,0,0))
->>>>>>> 65464410da796461e42c612969d71838d652dee8
         dataList = []
         i=0
         for d in dataCents:
             if(d == minimum[0]):
                 dataList.append(data[i])
-<<<<<<< HEAD
                 totalErr += dist(data[i],minimum[1])
             i+=1
         print('num in cluster '+ str(minimum[0])+' located at: '+str(minimum[1])+' ::::: '+str(len(dataList)))
@@ -228,22 +200,13 @@ if __name__ == '__main__':
         errs ={}
         # data = randData(1000)
         data = read2d('2D_data.csv')
+
+
+
         for i in range(1,8):
             errs[i] = main(i, data)
         mat.plot(errs.keys(),errs.values())
         mat.show()
-=======
-            i+=1
-        print('num in cluster '+ str(minimum[0])+' located at: '+str(minimum[1])+' ::::: '+str(len(dataList)))
-        mat.scatter([i[0] for i in dataList],[i[1] for i in dataList],s=4)
-        #index +=1
-    mat.show()
-
-if __name__ == '__main__':
-    try:
-
-        main()
->>>>>>> 65464410da796461e42c612969d71838d652dee8
     except KeyboardInterrupt:
         print('Interrupted')
         try:
